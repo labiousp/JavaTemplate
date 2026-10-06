@@ -1,0 +1,24 @@
+# Local PostgreSQL for development. Free, open source.
+#   docker compose up -d     start
+#   docker compose down      stop (data kept)
+#   docker compose down -v   stop and wipe data
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: app-db
+    environment:
+      POSTGRES_DB: ${DB_NAME:-app}
+      POSTGRES_USER: ${DB_USER:-app}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-app}
+    ports:
+      - "5432:5432"
+    volumes:
+      - app-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-app} -d ${DB_NAME:-app}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  app-db-data:
